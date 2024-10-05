@@ -1,5 +1,5 @@
 import express from 'express';
-import productRoutes from './routes/products.js';
+import patientRoutes from './routes/patient.route.js';
 import mongoose from 'mongoose';
 import config from "../config.js";
 import bodyParser from 'body-parser';
@@ -19,7 +19,7 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-app.use('/products', productRoutes);
+app.use('/products', patientRoutes);
 
 await connectToDB();
 

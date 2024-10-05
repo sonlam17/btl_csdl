@@ -1,4 +1,4 @@
-import Product from '../models/Product.js'
+import Product from '../models/Patient.js'
 
 async function index(req, res, next){
     try{

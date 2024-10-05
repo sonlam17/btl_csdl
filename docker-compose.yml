@@ -14,9 +14,9 @@ services:
     ports:
       - 4000:3000
     environment:
-      APP_NAME: csdl
+      APP_NAME: tbl_csdl
       PORT: 3000
-      DB_URI: mongodb://mongo_db:27017/csdl
+      DB_URI: mongodb://mongo_db:27017/tbl_csdl
     depends_on:
       - mongo_db
 

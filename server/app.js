@@ -12,7 +12,7 @@ const MONGO_URI = 'mongodb://localhost:27017/tbl_csdl'; // Thay thế bằng URI
 
 const connectToDB = async () => {
     try {
-        mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+        mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true,family: 4 })
           .then(() => console.log('Kết nối MongoDB thành công!'))
           .catch((error) => console.error('Lỗi kết nối MongoDB:', error));
     }catch (e) {

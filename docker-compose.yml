@@ -1,35 +1,24 @@
-version: '3'
+version: "3"
 
 services:
-  client:
-    build: client
-    container_name: client
-    ports:
-      - '8080:8080'
-    networks:
-      - app-network
-
-  server:
-    build: server
-    container_name: server
-    environment:
-      APP_NAME: tbl_csdl
-      PORT: 3000
-      DB_URI: mongodb://mongo:27017/tbl_csdl 
-    ports:
-      - '3000:3000'
-    depends_on:
-      - mongo
-    networks:
-      - app-network
-
-  mongo:
+  #MongoDB
+  mongo_db:
+    container_name: database_container
     image: mongo:latest
-    container_name: mongodb
-    command: mongod --quiet --logpath /dev/null
-    networks:
-      - app-network
+    restart: always
+    volumes:
+      - mongo_db:/data/db
 
-networks:
-  app-network:
-    driver: bridge
+  app:
+    build: server
+    ports:
+      - 4000:3000
+    environment:
+      APP_NAME: csdl
+      PORT: 3000
+      DB_URI: mongodb://mongo_db:27017/csdl
+    depends_on:
+      - mongo_db
+
+volumes:
+  mongo_db: {}

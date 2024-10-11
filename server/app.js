@@ -5,16 +5,12 @@ import nurseRoutes from './routes/nurse.route.js';
 import doctorRoutes from './routes/doctor.route.js';
 import medicationRoutes from './routes/medication.route.js';
 import mongoose from 'mongoose';
-import config from "./config.js";
+import config from "../config.js";
 import bodyParser from 'body-parser';
-const MONGO_URI = 'mongodb://localhost:27017/tbl_csdl'; // Thay thế bằng URI kết nối đến MongoDB của bạn
-
 
 const connectToDB = async () => {
     try {
-        mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true,family: 4 })
-          .then(() => console.log('Kết nối MongoDB thành công!'))
-          .catch((error) => console.error('Lỗi kết nối MongoDB:', error));
+        await mongoose.connect(config.db_uri, {})
     }catch (e) {
         console.log(e);
         process.exit(1)

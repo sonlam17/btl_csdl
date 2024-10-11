@@ -3,20 +3,20 @@ version: "3"
 services:
   #MongoDB
   mongo_db:
-    container_name: database_container
+    container_name: database
     image: mongo:latest
     restart: always
     volumes:
       - mongo_db:/data/db
 
   app:
-    build: server
+    build: .
     ports:
       - 4000:3000
     environment:
-      APP_NAME: csdl
+      APP_NAME: LearnDocker
       PORT: 3000
-      DB_URI: mongodb://mongo_db:27017/csdl
+      DB_URI: mongodb://mongo_db:27017/tbl_csdl
     depends_on:
       - mongo_db
 

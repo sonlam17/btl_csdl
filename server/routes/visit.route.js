@@ -1,5 +1,9 @@
 import express from 'express';
 import Visit from '../models/Visit.js'; 
+import Nurse from '../models/Nurse.js'; 
+import Doctor from '../models/Doctor.js'; 
+import Patient from '../models/Patient.js'; 
+import Medication from '../models/Medication.js'; 
 
 const router = express.Router();
 
@@ -39,6 +43,34 @@ router.get('/:id', async (req, res) => {
 // 3. Thêm mới một lần thăm khám
 router.post('/', async (req, res) => {
   try {
+    const { patient_id, doctor_id, nurse_id, prescriptions } = req.body;
+
+    // Kiểm tra sự tồn tại của bệnh nhân
+    const patient = await Patient.findById(patient_id);
+    if (!patient) {
+      return res.status(404).json({ error: 'Bệnh nhân không tồn tại' });
+    }
+
+    // Kiểm tra sự tồn tại của bác sĩ
+    const doctor = await Doctor.findById(doctor_id);
+    if (!doctor) {
+      return res.status(404).json({ error: 'Bác sĩ không tồn tại' });
+    }
+
+    // Kiểm tra sự tồn tại của y tá
+    const nurse = await Nurse.findById(nurse_id);
+    if (!nurse) {
+      return res.status(404).json({ error: 'Y tá không tồn tại' });
+    }
+
+    // Kiểm tra sự tồn tại của các loại thuốc trong mảng prescriptions
+    for (const prescription of prescriptions) {
+      const medication = await Medication.findById(prescription.medication_id);
+      if (!medication) {
+        return res.status(404).json({ error: `Thuốc với ID ${prescription.medication_id} không tồn tại` });
+      }
+    }
+
     const newVisit = new Visit(req.body);
     await newVisit.save();
     res.status(201).json(newVisit);
@@ -50,10 +82,39 @@ router.post('/', async (req, res) => {
 // 4. Cập nhật thông tin một lần thăm khám theo ID
 router.put('/:id', async (req, res) => {
   try {
+    const { patient_id, doctor_id, nurse_id, prescriptions } = req.body;
+
+    // Kiểm tra sự tồn tại của bệnh nhân
+    const patient = await Patient.findById(patient_id);
+    if (!patient) {
+      return res.status(404).json({ error: 'Bệnh nhân không tồn tại' });
+    }
+
+    // Kiểm tra sự tồn tại của bác sĩ
+    const doctor = await Doctor.findById(doctor_id);
+    if (!doctor) {
+      return res.status(404).json({ error: 'Bác sĩ không tồn tại' });
+    }
+
+    // Kiểm tra sự tồn tại của y tá
+    const nurse = await Nurse.findById(nurse_id);
+    if (!nurse) {
+      return res.status(404).json({ error: 'Y tá không tồn tại' });
+    }
+
+    // Kiểm tra sự tồn tại của các loại thuốc trong mảng prescriptions
+    for (const prescription of prescriptions) {
+      const medication = await Medication.findById(prescription.medication_id);
+      if (!medication) {
+        return res.status(404).json({ error: `Thuốc với ID ${prescription.medication_id} không tồn tại` });
+      }
+    }
+
     const updatedVisit = await Visit.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updatedVisit) {
       return res.status(404).json({ error: 'Không tìm thấy lần thăm khám' });
     }
+
     res.status(200).json(updatedVisit);
   } catch (error) {
     res.status(500).json({ error: 'Không thể cập nhật thông tin lần thăm khám' });

@@ -7,6 +7,6 @@ const MedicationSchema = new mongoose.Schema({
   dose: { type: String, required: true },
   
   price: { type: Number, required: true },
-});
+},{ versionKey: false });
 
 export default mongoose.model('Medication', MedicationSchema);

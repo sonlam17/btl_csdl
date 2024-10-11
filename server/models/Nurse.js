@@ -13,6 +13,6 @@ const NurseSchema = new mongoose.Schema({
   address: { type: String, required: true },
   
   specialty: { type: String, required: true },
-});
+},{ versionKey: false });
 
 export default mongoose.model('Nurse', NurseSchema);

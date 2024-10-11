@@ -12,6 +12,6 @@ const PatientSchema = new mongoose.Schema({
   
     phone: { type: String, required: true },
     
-});
+},{ versionKey: false });
 
 export default mongoose.model('Patient', PatientSchema);

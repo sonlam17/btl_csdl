@@ -19,8 +19,9 @@ const VisitSchema = new mongoose.Schema({
     {
       medication_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Medication', required: true },
       quantity: { type: Number, required: true },
+      _id: false 
     },
   ],
-});
+},{ versionKey: false });
 
 export default mongoose.model('Visit', VisitSchema);

@@ -17,6 +17,6 @@ const DoctorSchema = new mongoose.Schema({
 
   specialty: { type: String, required: true },
   
-});
+},{ versionKey: false });
 
 export default mongoose.model('Doctor', DoctorSchema);

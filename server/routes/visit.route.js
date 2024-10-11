@@ -6,7 +6,50 @@ import Patient from '../models/Patient.js';
 import Medication from '../models/Medication.js'; 
 
 const router = express.Router();
+router.get('/diagnosis-summary/:month/:year', async (req, res) => {
+  const { month, year } = req.params;
 
+  // Lấy ngày đầu và cuối của tháng
+  const startOfMonth = new Date(year, month - 1, 1);
+  const endOfMonth = new Date(year, month, 0);
+
+  try {
+    const result = await Visit.aggregate([
+      {
+        $match: {
+          visit_date: { $gte: startOfMonth, $lte: endOfMonth }
+        }
+      },
+      {
+        $group: {
+          _id: "$diagnosis", // Nhóm theo chẩn đoán
+          patient_count: { $addToSet: "$patient_id" }, // Lưu danh sách bệnh nhân
+          patients: {
+            $push: {
+              patient_id: "$patient_id",
+              visit_date: "$visit_date"
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          patient_count: { $size: "$patient_count" }, // Đếm số bệnh nhân
+          patients: "$patients"
+        }
+      },
+      {
+        $sort: { patient_count: -1 } // Sắp xếp theo số bệnh nhân giảm dần
+      }
+    ]);
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Đã xảy ra lỗi khi lấy dữ liệu' });
+  }
+});
 // 1. Lấy danh sách tất cả lần thăm khám
 router.get('/', async (req, res) => {
   try {
@@ -43,7 +86,7 @@ router.get('/:id', async (req, res) => {
 // 3. Thêm mới một lần thăm khám
 router.post('/', async (req, res) => {
   try {
-    const { patient_id, doctor_id, nurse_id, prescriptions } = req.body;
+    const { patient_id, doctor_id, nurse_id, prescriptions, diagnosis} = req.body;
 
     // Kiểm tra sự tồn tại của bệnh nhân
     const patient = await Patient.findById(patient_id);
@@ -68,6 +111,19 @@ router.post('/', async (req, res) => {
       const medication = await Medication.findById(prescription.medication_id);
       if (!medication) {
         return res.status(404).json({ error: `Thuốc với ID ${prescription.medication_id} không tồn tại` });
+      }
+    }
+    const previousVisit = await Visit.findOne({
+      patient_id: patient_id,
+      diagnosis: diagnosis
+    });
+
+    if (previousVisit) {
+      // Nếu có lần khám trước với bác sĩ khác, trả lỗi
+      if (previousVisit.doctor_id.toString() !== doctor_id) {
+        return res.status(400).json({
+          error: 'Bệnh nhân đã khám bệnh này với bác sĩ khác trước đó. Không thể thay đổi bác sĩ'
+        });
       }
     }
 
